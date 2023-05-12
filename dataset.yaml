@@ -1,10 +1,10 @@
 # Path
-path: /content/drive/MyDrive/datasets4  # dataset root dir
+path: /content/drive/MyDrive/datasets5  # dataset root dir
 train: images/train  # train images (relative to 'path')
 val: images/val  # val images (relative to 'path')
 
 # Classes
-nc: 37  # number of classes
+nc: 38  # number of classes
 names: [
   '一萬',
   '二萬',
@@ -43,6 +43,7 @@ names: [
   '白',
   '發',
   '中',
+  '槓',
   ]  # class names
 
 #「nc」には検出したい物の数を入力します。今回は敵だけを検出したいので「1」と入力しています。

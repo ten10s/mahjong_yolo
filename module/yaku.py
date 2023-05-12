@@ -66,7 +66,7 @@ class mahjong_calculation:
     calculator = HandCalculator()
     #計算結果
     result = calculator.estimate_hand_value(self.tiles_136, self.win_tile, self.melds, self.dora_indicators, self.config)
-    if result.han:
+    if result.han and result.han != 1:
       if result.han <= 5:
           basic_score = result.fu * 2 ** (result.han + 2)
           if basic_score > 2000:
@@ -111,29 +111,31 @@ class mahjong_calculation:
     #テンパっていない場合シャンテン数
     else:
       shanten = Shanten()
-      result = shanten.calculate_shanten(self.tiles_34)
-      print('{}シャンテン'.format(result+1))
+      try:
+        result = shanten.calculate_shanten(self.tiles_34)
+        print('{}シャンテン'.format(result+1))
+      except:
+        print('無役')
+
 
 # #(honors=1:東, 2:南, 3:西, 4:北, 5:白, 6:發, 7:中)
 # #(赤ドラは0,またはrを用いる(並び順はなんでもOK), 'has_aka_dora' : Trueを設定)
 # tiles = {
-#   'man' : '0222246',
-#   'pin' : '333',
-#   'sou' : '33567',
-#   'honors' : '',
+#   'man' : '111',
+#   'pin' : '7777',
+#   'sou' : '045565',
+#   'honors' : '11',
 #   'has_aka_dora' : True
 #   }
 # win_tile = {
-#   'man' : '6',
+#   'man' : '',
 #   'pin' : '',
 #   'sou' : '',
-#   'honors' : ''
+#   'honors' : '1'
 #   }
 # #鳴き(チー:CHI, ポン:PON, カン:KAN(True:ミンカン,False:アンカン), カカン:CHANKAN, ヌキドラ:NUKI)
 # melds = [{
-#   'KAN' : ['man', '2222', False],
-#   'PON' : ['pin', '333'],
-#   'CHI' : ['sou', '567'],
+#   'KAN' : ['pin', '7777', False],
 # }]
 # dora = {
 # }
