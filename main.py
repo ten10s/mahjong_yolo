@@ -6,7 +6,7 @@ import cv2
 import os
 
 
-def main(data, img) :
+def calc(data, img) :
   #画像を横に整形する
   # img = module.rotation_exif('./yolo_test3.JPG')
   #認証処理
@@ -67,7 +67,6 @@ def main(data, img) :
     return result
 
   except:
-    
     #不要な画像を削除(上書き保存なので無くてもいい)
     shutil.rmtree('runs/detect/predict/')
     

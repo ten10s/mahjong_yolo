@@ -1,6 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs, urlparse
-from main import main
+from main import calc
 
 # 警告 http.server本番環境には推奨されません。基本的なセキュリティ チェックのみを実装します 。
 class Server(BaseHTTPRequestHandler):
@@ -30,7 +30,7 @@ class Server(BaseHTTPRequestHandler):
     with open("hai.jpg", mode="wb") as f:
       f.write(img)
       
-    result = main(data, "hai.JPG")
+    result = calc(data, "hai.JPG")
     
     print(result)
   
