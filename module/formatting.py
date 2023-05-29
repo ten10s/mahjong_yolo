@@ -1,4 +1,6 @@
-def formatting(label, df):
+from collections import defaultdict
+
+def formatting(label, df, data):
   hai = {
     '一' : '1',
     '二' : '2',
@@ -131,6 +133,69 @@ def formatting(label, df):
          #tilesのアンカン処理
         if kan:
           honors += dst[0] + dst[0]
+          
+  #data処理
+  #dora
+  dora = defaultdict(list)
+  if data.get("dora"):
+    doras  = data.get("dora")[0].split(",")
+    for i in doras:
+      if i[-1:] == '萬':
+        if i[:1] == '赤':
+          dora['man'].append('5')
+        else:
+          dora['man'].append(hai[i[:1]])
+      elif i[-1:] == '筒':
+        if i[:1] == '赤':
+          dora['pin'].append('5')
+        else:
+          dora['pin'].append([i[:1]])
+      elif i[-1:] == '索':
+        if i[:1] == '赤':
+          dora['sou'].append('5')
+        else:
+          dora['sou'].append([i[:1]])
+      elif i != "":
+        dora['honors'].append(hai[i])
+        
+  #option
+  azimuth = {
+    '東' : 'EAST',
+    '南' : 'SOUTH',
+    '西' : 'WEST',
+    '北' : 'NORTH',
+  }
+  
+  option = {}
+  
+  option['player_wind'] = azimuth[data["zikaze"][0]]
+  option['round_wind']  = azimuth[data["zikaze"][0]]
+
+  # アガリ判断
+  is_tsumo = False
+  if data["agari"][0] == "ツモ":
+    is_tsumo = True
+  option["is_tsumo"] = is_tsumo
+  
+  yaku = {
+    '立直'       : 'is_riichi',
+    'ダブル立直' : 'is_daburu_riichi',
+    '一発'       : 'is_ippatsu',
+    '嶺上開花'   : 'is_rinshan',
+    '海底摸月'   : 'is_haitei',
+    '槍槓'       : 'is_chankan',
+    '河底撈魚'   : 'is_houtei',
+    '流し満貫'   : 'is_nagashi_mangan',
+    '天和'       : 'is_tenhou',
+    '人和'       : 'is_renhou',
+    '地和'       : 'is_chiihou',
+  }
+
+  if data.get("option"):
+    options = data.get("option")[0].split(',')
+    for i in options:
+      if i != "":
+        option[yaku[i]] = True
 
   tiles = {
     'man' : man,
@@ -148,13 +213,15 @@ def formatting(label, df):
     'sou' : win_sou,
     'honors' : win_honors,
   }
-
-  return tiles, win_tile, melds
+  
+  return tiles, win_tile, melds, dora, option
 
 # hai = [[29, 22, 22], [37, 15, 15, 37], [0, 0, 0, 21, 22, 23, 30], [30]]
 # label = {
 #   0: '一萬', 1: '二萬', 2: '三萬', 3: '四萬', 4: '伍萬', 5: '六萬', 6: '七萬', 7: '八萬', 8: '九萬', 9: '一筒', 10: '二筒', 11: '三筒', 12: '四筒', 13: '伍筒', 14: '六筒', 15: '七筒', 16: '八筒', 17: '九筒', 18: '一索', 19: '二索', 20: '三索', 21: '四索', 22: '伍索', 23: '六索', 24: '七索', 25: '八索', 26: '九索', 27: '赤萬', 28: '赤筒', 29: '赤索', 30: '東', 31: '南', 32: '西', 33: '北', 34: '白', 35: '發', 36: '中', 37: '槓'
 # }
+# data = {'agari': ['ロン'], 'zikaze': ['東'], 'bakaze': ['北'], 'dora': ['伍萬,七萬,'], 'option': ['海底摸月,河底撈魚,流し満貫,']}
 
 # if __name__ == '__main__':
-#   print(formatting(label, hai))
+#   a = formatting(label, hai, data)
+#   print(a[3])

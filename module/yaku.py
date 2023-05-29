@@ -3,6 +3,8 @@ from mahjong.tile import TilesConverter
 from mahjong.meld import Meld
 from mahjong.shanten import Shanten
 from module.config import agari_option
+# from collections import defaultdict
+
 
 class mahjong_calculation:
   def __init__(self, tiles, win_tile, meld=None, dora={}, config={}, debug=False):
@@ -13,31 +15,32 @@ class mahjong_calculation:
     self.win_tile = TilesConverter.string_to_136_array(man=win_tile['man'], pin=win_tile['pin'], sou=win_tile['sou'], honors=win_tile['honors'])[0]
     #鳴き
     self.melds = []
-    for key in meld[0]:
-      hai = {
-        key : meld[0][key]
-      }
-      if hai.get('KAN'):
-        self.melds.append(
-          Meld(Meld.KAN, TilesConverter.string_to_136_array(
-              man    = hai[key][1] if hai[key][0] == 'man' else '',
-              pin    = hai[key][1] if hai[key][0] == 'pin' else '',
-              sou    = hai[key][1] if hai[key][0] == 'sou' else '',
-              honors = hai[key][1] if hai[key][0] == 'honors' else '',
-            ), hai[key][2] if hai[key][2] else ''
-          )
-        )
-      else:
-        self.melds.append(
-          Meld(Meld.KAN if list(hai.keys())[0] == 'KAN' else Meld.PON if list(hai.keys())[0] == 'PON' else Meld.CHI,
-            TilesConverter.string_to_136_array(
-              man    = hai[key][1] if hai[key][0] == 'man' else '',
-              pin    = hai[key][1] if hai[key][0] == 'pin' else '',
-              sou    = hai[key][1] if hai[key][0] == 'sou' else '',
-              honors = hai[key][1] if hai[key][0] == 'honors' else '',
+    if meld:
+      for key in meld[0]:
+        hai = {
+          key : meld[0][key]
+        }
+        if hai.get('KAN'):
+          self.melds.append(
+            Meld(Meld.KAN, TilesConverter.string_to_136_array(
+                man    = hai[key][1] if hai[key][0] == 'man' else '',
+                pin    = hai[key][1] if hai[key][0] == 'pin' else '',
+                sou    = hai[key][1] if hai[key][0] == 'sou' else '',
+                honors = hai[key][1] if hai[key][0] == 'honors' else '',
+              ), hai[key][2] if hai[key][2] else ''
             )
           )
-        )
+        else:
+          self.melds.append(
+            Meld(Meld.KAN if list(hai.keys())[0] == 'KAN' else Meld.PON if list(hai.keys())[0] == 'PON' else Meld.CHI,
+              TilesConverter.string_to_136_array(
+                man    = hai[key][1] if hai[key][0] == 'man' else '',
+                pin    = hai[key][1] if hai[key][0] == 'pin' else '',
+                sou    = hai[key][1] if hai[key][0] == 'sou' else '',
+                honors = hai[key][1] if hai[key][0] == 'honors' else '',
+              )
+            )
+          )
 
     #ドラ
     self.dora_indicators = []
@@ -45,8 +48,17 @@ class mahjong_calculation:
       hai = {
         key : dora[key]
         }
-      self.dora_indicators.append(TilesConverter.string_to_136_array(man=hai.get('man'), pin=hai.get('pin'), sou=hai.get('sou'), honors=hai.get('honors'))[0])
-    
+      # self.dora_indicators.append(TilesConverter.string_to_136_array(man=hai.get('man'), pin=hai.get('pin'), sou=hai.get('sou'), honors=hai.get('honors'))[0])
+      for i in hai[key]:
+        if key == 'man':
+          self.dora_indicators.append(TilesConverter.string_to_136_array(man=i)[0])
+        if key == 'pin':
+          self.dora_indicators.append(TilesConverter.string_to_136_array(pin=i)[0])
+        if key == 'sou':
+          self.dora_indicators.append(TilesConverter.string_to_136_array(sou=i)[0])
+        if key == 'honors':
+          self.dora_indicators.append(TilesConverter.string_to_136_array(honors=i)[0])
+
     #オプション
     self.config = agari_option(config)
     #ロンかツモか
@@ -94,8 +106,10 @@ class mahjong_calculation:
           else:
               all_cost = "親 {}点 / 子 {}点".format(result.cost["additional"], result.cost["main"])
 
-      print(hansu)
-      print(all_cost)
+      return '{}\n{}'.format(hansu, all_cost)
+
+      # print(hansu)
+      # print(all_cost)
 
       #詳細表示
       if self.debug:
@@ -113,32 +127,35 @@ class mahjong_calculation:
       shanten = Shanten()
       try:
         result = shanten.calculate_shanten(self.tiles_34)
-        print('{}シャンテン'.format(result+1))
+        return '{}シャンテン'.format(result+1)
       except:
-        print('無役')
+        return '無役'
 
 
 # #(honors=1:東, 2:南, 3:西, 4:北, 5:白, 6:發, 7:中)
 # #(赤ドラは0,またはrを用いる(並び順はなんでもOK), 'has_aka_dora' : Trueを設定)
 # tiles = {
-#   'man' : '111',
-#   'pin' : '7777',
-#   'sou' : '045565',
-#   'honors' : '11',
+#   'man' : '',
+#   'pin' : '111222333444',
+#   'sou' : '',
+#   'honors' : '55',
 #   'has_aka_dora' : True
 #   }
 # win_tile = {
 #   'man' : '',
 #   'pin' : '',
 #   'sou' : '',
-#   'honors' : '1'
+#   'honors' : '5'
 #   }
 # #鳴き(チー:CHI, ポン:PON, カン:KAN(True:ミンカン,False:アンカン), カカン:CHANKAN, ヌキドラ:NUKI)
 # melds = [{
 #   'KAN' : ['pin', '7777', False],
 # }]
-# dora = {
-# }
+# melds = [{}]
+# #dora
+# dora = defaultdict(list)
+# dora['man'].append('5')
+# dora['man'].append('7')
 
 # #(赤ドラの場合は、'has_aka_dora' : Trueを追加)
 # #デフォルトは喰いタン、赤ドラ無効
@@ -152,4 +169,4 @@ class mahjong_calculation:
 
 # if __name__ == '__main__':
 #   a = mahjong_calculation(tiles, win_tile, melds, dora, config, debug=True)
-#   a.print_hand_result()
+#   print(a.print_hand_result())
